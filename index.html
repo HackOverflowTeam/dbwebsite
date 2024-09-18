@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px 0;
+            width: calc(100% - 22px);
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Management</h1>
+    <div class="container">
+        <form id="addUserForm">
+            <h2>Add User</h2>
+            <input type="text" id="name" placeholder="Name" required>
+            <input type="text" id="phone" placeholder="Phone Number" required>
+            <input type="email" id="email" placeholder="Email ID" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <input type="text" id="rollNo" placeholder="Student Roll No" required>
+            <input type="text" id="schoolId" placeholder="School ID" required>
+            <button type="submit">Add User</button>
+        </form>
+        
+        <form id="viewUserForm">
+            <h2>View User</h2>
+            <input type="text" id="viewPhone" placeholder="Phone Number">
+            <input type="email" id="viewEmail" placeholder="Email ID">
+            <button type="submit">View User</button>
+        </form>
+
+        <form id="deleteUserForm">
+            <h2>Delete User</h2>
+            <input type="text" id="deletePhone" placeholder="Phone Number">
+            <input type="email" id="deleteEmail" placeholder="Email ID">
+            <button type="submit">Delete User</button>
+        </form>
+        
+        <form id="decryptPasswordForm">
+            <h2>Decrypt Password</h2>
+            <input type="text" id="decryptPhone" placeholder="Phone Number">
+            <input type="email" id="decryptEmail" placeholder="Email ID">
+            <button type="submit">Decrypt Password</button>
+        </form>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const baseURL = 'https://db-server-hjp6.onrender.com'; // Update with your API base URL
+
+        document.getElementById('addUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const rollNo = document.getElementById('rollNo').value;
+            const schoolId = document.getElementById('schoolId').value;
+
+            try {
+                const response = await fetch(`${baseURL}/adduser`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, phone, email, password, rollNo, schoolId })
+                });
+                const result = await response.json();
+                showResult(result);
+            } catch (error) {
+                showResult({ message: 'Error adding user' });
+            }
+        });
+
+        document.getElementById('viewUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const phone = document.getElementById('viewPhone').value;
+            const email = document.getElementById('viewEmail').value;
+
+            try {
+                const response = await fetch(`${baseURL}/viewuser?phone=${phone}&email=${email}`);
+                const result = await response.json();
+                showResult(result);
+            } catch (error) {
+                showResult({ message: 'Error viewing user' });
+            }
+        });
+
+        document.getElementById('deleteUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const phone = document.getElementById('deletePhone').value;
+            const email = document.getElementById('deleteEmail').value;
+
+            try {
+                const response = await fetch(`${baseURL}/deleteuser`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, email })
+                });
+                const result = await response.json();
+                showResult(result);
+            } catch (error) {
+                showResult({ message: 'Error deleting user' });
+            }
+        });
+
+        document.getElementById('decryptPasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const phone = document.getElementById('decryptPhone').value;
+            const email = document.getElementById('decryptEmail').value;
+
+            try {
+                const response = await fetch(`${baseURL}/decryptpassword?phone=${phone}&email=${email}`);
+                const result = await response.json();
+                showResult(result);
+            } catch (error) {
+                showResult({ message: 'Error decrypting password' });
+            }
+        });
+
+        function showResult(result) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = JSON.stringify(result, null, 2);
+        }
+    </script>
+</body>
+</html>
